@@ -1,0 +1,44 @@
+MODEL:
+  LABEL: [
+  "aeroplane",
+  "bicycle",
+  "bird",
+  "boat",
+  "bottle",
+  "bus",
+  "car",
+  "cat",
+  "chair",
+  "cow",
+  "diningtable",
+  "dog",
+  "horse",
+  "motorbike",
+  "person",
+  "pottedplant",
+  "sheep",
+  "sofa",
+  "train",
+  "tvmonitor"
+  ]
+  numcls: 20
+  modeltype: StrongerV1
+  backbone: 'darknet53'
+EXPER:
+  experiment_name: 'strongerv2_sparse'
+  resume: 'best'
+DATASET:
+  dataset: 'VOC'
+
+OPTIM:
+  batch_size: 12
+  lr_initial: 2e-4
+  total_epoch: 3
+  milestones: [1,2]
+
+Prune:
+  sparse: True
+  pruneratio: 0.35
+  bbOutName: ('backbone.layer3.residual_7','backbone.layer4.residual_7','backbone.layer5.residual_3')
+
+debug: True
