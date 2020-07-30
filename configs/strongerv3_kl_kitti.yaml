@@ -1,0 +1,28 @@
+MODEL:
+  LABEL: [
+  'Tram', 'Truck', 'Cyclist', 'DontCare', 'person', 'car', 'Misc', 'Van', 'Person_sitting'
+  ]
+  numcls: 20
+  modeltype: StrongerV3KL
+  backbone: 'darknet53'
+  backbone_pretrained: 'checkpoints/darknet53.pth'
+  boxloss: KL
+  l1scale: 0.1
+  clsfocal: True
+EVAL:
+  varvote: True
+EXPER:
+  experiment_name: 'strongerv3_kl'
+DATASET:
+  dataset: 'KITTI'
+
+OPTIM:
+  batch_size: 12
+  lr_initial: 2e-4
+  total_epoch: 60
+  milestones: [30,45]
+
+Prune:
+  sparse: False
+
+devices: (0,)
