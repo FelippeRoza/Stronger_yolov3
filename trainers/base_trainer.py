@@ -1,5 +1,5 @@
 from utils.util import ensure_dir
-from dataset import get_COCO, get_VOC
+from dataset import get_COCO, get_VOC, get_KITTI
 import os
 import time
 from dataset import makeImgPyramids
@@ -73,7 +73,10 @@ class BaseTrainer:
             load_tf_weights(self.model, 'vocweights.pkl')
         else:  # iter or best
             ckptfile = torch.load(os.path.join(self.save_path, 'checkpoint-{}.pth'.format(self.args.EXPER.resume)))
+            if next(iter(ckptfile['state_dict'])).startswith('module.'): #if checkpoint comes from parallelized model
+                self.model = nn.DataParallel(self.model)
             self.model.load_state_dict(ckptfile['state_dict'])
+
             #load_checkpoint(self.model,ckptfile)
             if not self.args.finetune:
                 self.optimizer.load_state_dict(ckptfile['opti_dict'])
