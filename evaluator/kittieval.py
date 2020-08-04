@@ -9,14 +9,15 @@ from .Evaluator import Evaluator
 import glob
 
 class EvaluatorKITTI(Evaluator):
-  def __init__(self, anchors,cateNames,rootpath,score_thres,iou_thres,use_07_metric=False):
+  def __init__(self, anchors,cateNames,rootpath,score_thres,iou_thres,
+                use_07_metric=False,save_img_dir=None,num_visual=10):
     self.rec_pred = defaultdict(list)
     self.rec_gt = defaultdict(list)
     self.use_07_metric = use_07_metric
     self._annopath = os.path.join('{}', 'labels', '{}.xml')
     self._imgpath = os.path.join('{}', 'images', '{}.png')
     self.reset()
-    super().__init__(anchors, cateNames, rootpath, score_thres, iou_thres)
+    super().__init__(anchors, cateNames, rootpath, score_thres, iou_thres, save_img_dir, num_visual)
 
   def reset(self):
     self.coco_imgIds = set([])

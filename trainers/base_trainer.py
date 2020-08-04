@@ -86,7 +86,7 @@ class BaseTrainer:
         print("successfully load checkpoint {}".format(self.args.EXPER.resume))
 
     def _get_model(self):
-        self.save_path = './checkpoints/{}/'.format(self.experiment_name)
+        self.save_path = os.path.join(self.args.EXPER.save_model_dir, self.experiment_name)
         ensure_dir(self.save_path)
         self._prepare_device()
         if self.args.EXPER.resume:
@@ -155,7 +155,7 @@ class BaseTrainer:
                 if results[0] > self.best_mAP:
                     self.best_mAP = results[0]
                     self._save_ckpt(name='best', metric=self.best_mAP)
-            if epoch % 5 == 0:
+            if epoch % 10 == 0:
                 self._save_ckpt(metric=0)
 
     def _train_epoch(self):

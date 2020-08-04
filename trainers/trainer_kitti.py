@@ -12,6 +12,8 @@ class Trainer(BaseTrainer):
                                       rootpath=self.dataset_root,
                                       score_thres=0.01,
                                       iou_thres=self.args.EVAL.iou_thres,
-                                      use_07_metric=False
+                                      use_07_metric=False,
+                                      save_img_dir=self.args.EXPER.save_img_dir,
+                                      num_visual=self.args.EXPER.num_visual
                                       )
     self.logger_custom = ['mAP']+['AP@{}'.format(cls) for cls in self.labels]

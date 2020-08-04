@@ -34,6 +34,9 @@ _C.EXPER.experiment_name=''
 _C.EXPER.train_sizes=[480,512,544]
 _C.EXPER.test_size=512
 _C.EXPER.resume=''
+_C.EXPER.save_model_dir='./checkpoints'
+_C.EXPER.num_visual=10 # number of images with bounding box detections to show in tensorboard / save
+_C.EXPER.save_img_dir='' # folder to save test images
 
 _C.OPTIM=CN()
 _C.OPTIM.batch_size=12
@@ -54,7 +57,3 @@ _C.Prune.sparse=False
 _C.Prune.sr=0.01
 _C.Prune.pruneratio=0.0
 _C.Prune.bbOutName=('backbone.layer3.residual_7','backbone.layer4.residual_7','backbone.layer5.residual_3')
-
-
-
-

@@ -4,9 +4,12 @@ from utils.visualize import visualize_boxes
 import numpy as np
 import matplotlib.pyplot as plt
 from PIL import Image
+from utils.util import ensure_dir
+import os
 
 class Evaluator:
-  def __init__(self,anchors,cateNames,rootpath,score_thres=0.01,iou_thres=0.5):
+  def __init__(self,anchors,cateNames,rootpath,score_thres=0.01,iou_thres=0.5,
+                save_img_dir=None,num_visual=10):
     self.anchors=anchors
     self.score_thres=score_thres
     self.iou_thres=iou_thres
@@ -15,7 +18,8 @@ class Evaluator:
 
     self.visual_imgs = []
     #show 10 images in tensorboard by default
-    self.num_visual=10
+    self.num_visual=num_visual
+    self.save_img_dir=save_img_dir
     self.build_GT()
   def reset(self):
     pass
@@ -29,7 +33,7 @@ class Evaluator:
   def evaluate(self):
     raise NotImplementedError
 
-  def append_visulize(self, imgpath, boxesPre, labelsPre, scoresPre, boxGT, labelGT, savepath=None):
+  def append_visulize(self, imgpath, boxesPre, labelsPre, scoresPre, boxGT, labelGT):
     imPre = np.array(Image.open(imgpath).convert('RGB'))
     imGT = imPre.copy()
 
@@ -42,6 +46,6 @@ class Evaluator:
     self.visual_imgs.append(imshow)
     # plt.imshow(imPre)
     # plt.show()
-    if savepath:
-      import os
-      plt.imsave(os.path.join(savepath, '{}.png'.format(len(self.visual_imgs))), imshow)
+    if self.save_img_dir:
+      ensure_dir(self.save_img_dir)
+      plt.imsave(os.path.join(self.save_img_dir, '{}.png'.format(len(self.visual_imgs))), imshow)
