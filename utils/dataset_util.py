@@ -1,15 +1,45 @@
+# -*- coding: utf-8 -*-
 import os
 import glob
-import os
 import numpy as np
 from xml.etree.ElementTree import parse
-
+import json
+from utils.util import ensure_dir
+from pathlib import Path
 
 def get_filelists(path, prefix, suffix):
     return glob.glob(os.path.join(path, '{}.{}'.format(prefix, suffix)))
 
+def save_ecp_json(det_list, dest_folder, img_path, id_to_class):
+    '''
+    det_list: [boxes, labels, scores, var]
+    '''
+    objects = []
+    img_name = Path(img_path).stem
+    for index, bbox in enumerate(det_list[0]):
+        covs = det_list[3][index]
+        obj_class = id_to_class[int(det_list[1][index])]
+        if obj_class == 'pedestrian':
+            obj_class = 'person'
+        obj = {'identity': obj_class,
+               'x0': float(bbox[0]),
+               'y0': float(bbox[1]),
+               'x1': float(bbox[2]),
+               'y1': float(bbox[3]),
+               'sigma_xmin': float(covs[0]),
+               'sigma_ymin': float(covs[1]),
+               'sigma_xmax': float(covs[2]),
+               'sigma_ymax': float(covs[3]),
+               'orient': 0.0,
+               'score': float(det_list[2][index])
+               }
+        objects.append(obj)
 
-# -*- coding: utf-8 -*-
+    frame = {'identity': 'frame'}
+    frame['children'] = objects
+    ensure_dir(dest_folder)
+    json.dump(frame, open(os.path.join(dest_folder, img_name + '.json'), 'w'), indent=1)
+
 
 class PascalVocXmlParser(object):
     """Parse annotation for 1-annotation file """

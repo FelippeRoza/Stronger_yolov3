@@ -44,7 +44,7 @@ def torch_nms(cfg, boxes, variance=None):
     numcls = boxes.shape[1] - 4
     scores = boxes[:, 4:].view(-1, numcls)
     # Picked bounding boxes
-    picked_boxes, picked_score, picked_label = [], [], []
+    picked_boxes, picked_score, picked_label, picked_var = [], [], [], []
     for i in range(numcls):
         filter_idx = (scores[:, i] >= cfg.score_thres).nonzero().squeeze(-1)
         if len(filter_idx) == 0:
@@ -60,7 +60,9 @@ def torch_nms(cfg, boxes, variance=None):
             picked_boxes.append(clsbox[:, :4])
             picked_score.append(clsbox[:, 4])
             picked_label.extend([torch.ByteTensor([i]) for _ in range(len(clsbox))])
+            if variance is not None:
+                picked_var.append(clsbox[:, -4:])
     if len(picked_boxes) == 0:
-        return None, None, None
+        return None, None, None, None
     else:
-        return torch.cat(picked_boxes), torch.cat(picked_score), torch.cat(picked_label)
+        return torch.cat(picked_boxes), torch.cat(picked_score), torch.cat(picked_label), torch.cat(picked_var)

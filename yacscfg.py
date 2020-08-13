@@ -2,6 +2,8 @@ from yacs.config import CfgNode as CN
 _C = CN()
 _C.debug= False
 _C.do_test=False
+_C.save_json=False # only works if do_test is true
+_C.save_json_dir='./output/detections'
 _C.finetune=False
 _C.devices= (0,)
 

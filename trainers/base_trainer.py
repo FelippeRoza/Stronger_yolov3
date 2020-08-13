@@ -1,4 +1,5 @@
 from utils.util import ensure_dir
+from utils.dataset_util import save_json_cov, save_ecp_json
 from dataset import get_COCO, get_VOC, get_KITTI
 import os
 import time
@@ -209,6 +210,8 @@ class BaseTrainer:
             dh = (test_input_size - resize_ratio * org_h) / 2
             pred_coor[:, 0::2] = 1.0 * (pred_coor[:, 0::2] - dw) / resize_ratio
             pred_coor[:, 1::2] = 1.0 * (pred_coor[:, 1::2] - dh) / resize_ratio
+            pred_vari[:, 0::2] = pred_vari[:, 0::2] / resize_ratio
+            pred_vari[:, 1::2] = pred_vari[:, 1::2] / resize_ratio
             x1,y1,x2,y2=torch.split(pred_coor,[1,1,1,1],dim=1)
             x1,y1=torch.max(x1,torch.zeros_like(x1)),torch.max(y1,torch.zeros_like(y1))
             x2,y2=torch.min(x2,torch.ones_like(x2)*(org_w-1)),torch.min(y2,torch.ones_like(y2)*(org_h-1))
@@ -226,6 +229,7 @@ class BaseTrainer:
                 return bboxes,None
         s = time.time()
         self.model.eval()
+        result_dict = {} # result_dict[key] = [boxes, labels, scores, covars, img_shape]
         for idx_batch, inputs in tqdm(enumerate(self.test_dataloader),total=len(self.test_dataloader)):
             if idx_batch == validiter:  # to save time
                 break
@@ -238,13 +242,19 @@ class BaseTrainer:
             for imgidx in range(len(outputs)):
 
                 bbox,bboxvari = _postprocess(outputs[imgidx], imgs.shape[-1], ori_shapes[imgidx])
-                nms_boxes, nms_scores, nms_labels = torch_nms(self.args.EVAL,bbox,
+                nms_boxes, nms_scores, nms_labels, nms_var = torch_nms(self.args.EVAL,bbox,
                                                                  variance=bboxvari)
                 if nms_boxes is not None:
-                    self.TESTevaluator.append(imgpath[imgidx][0],
-                                              nms_boxes.cpu().numpy(),
-                                              nms_scores.cpu().numpy(),
-                                              nms_labels.cpu().numpy())
+                    self.TESTevaluator.append(imgpath[imgidx][0], nms_boxes.cpu().numpy(),
+                                            nms_scores.cpu().numpy(), nms_labels.cpu().numpy())
+                    if self.args.save_json:
+                        # prepare dict for json file
+                        single_img_path = imgpath[imgidx][0]
+                        det_list = [nms_boxes.cpu().numpy(), nms_labels.cpu().numpy(),
+                                    nms_scores.cpu().numpy(), nms_var.cpu().numpy()]
+                        det_dir = os.path.join(self.args.save_json_dir, self.args.EXPER.experiment_name)
+                        save_ecp_json(det_list, det_dir, single_img_path, self.labels)
+
         results = self.TESTevaluator.evaluate()
         imgs = self.TESTevaluator.visual_imgs
         for k, v in zip(self.logger_custom, results):
