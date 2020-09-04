@@ -23,6 +23,8 @@ class COCOdataset(BaseDataset):
             for i, cat_id in enumerate(self.cat_ids)
         }
         self.img_ids, self.img_infos = self._filter_imgs()
+        for info in self.img_infos:
+            self._ids.append((self.image_dir, info['file_name']))
 
     def _filter_imgs(self, min_size=32):
         # Filter images without ground truths.

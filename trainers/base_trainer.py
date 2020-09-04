@@ -1,5 +1,5 @@
 from utils.util import ensure_dir
-from utils.dataset_util import save_json_cov, save_ecp_json
+from utils.dataset_util import save_ecp_json
 from dataset import get_COCO, get_VOC, get_KITTI
 import os
 import time
