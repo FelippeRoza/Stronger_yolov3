@@ -1,5 +1,5 @@
-from dataset.pycocotools.coco import COCO
-from dataset.pycocotools.cocoeval import COCOeval
+from pycocotools.coco import COCO
+from pycocotools.cocoeval import COCOeval
 import os
 from .Evaluator import Evaluator
 import numpy as np

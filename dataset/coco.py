@@ -2,7 +2,8 @@ import os
 import os.path as osp
 import cv2
 import numpy as np
-from dataset.pycocotools.coco import COCO
+# from dataset.pycocotools.coco import COCO
+from pycocotools.coco import COCO
 from dataset.augment import transform
 import random
 import torch.utils.data as data

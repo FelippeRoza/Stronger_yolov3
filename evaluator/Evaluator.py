@@ -1,5 +1,5 @@
-from dataset.pycocotools.coco import COCO
-from dataset.pycocotools.cocoeval import COCOeval
+from pycocotools.coco import COCO
+from pycocotools.cocoeval import COCOeval
 from utils.visualize import visualize_boxes
 import numpy as np
 import matplotlib.pyplot as plt
